@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turfers - Turf Booking Website</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="app-canvas">
+
+        <!-- Top Header (Shown on Portals) -->
+        <header id="topHeader" class="top-header" style="display: none;">
+            <div class="app-title" onclick="goHome()">Turfers</div>
+            <div class="user-meta">
+                <span id="welcomeUserText">Welcome, user</span>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </header>
+
+        <!-- =========================================================
+             1. LANDING SCREEN (Role Selector: Admin / User)
+             ========================================================= -->
+        <div id="landingView" class="landing-wrapper">
+            <div class="landing-header">
+                <h1 class="landing-title">Turf Booking Website</h1>
+                <p class="landing-subtitle">It is now easy to book turf, Select 1 options as the field now</p>
+            </div>
+
+            <div class="role-cards-container">
+                <!-- Admin Role Card -->
+                <div class="role-card">
+                    <h2 class="role-card-title">Admin</h2>
+                    <p class="role-card-desc">Manage turf at admin level</p>
+                    <button class="btn-action" onclick="openAuthModal('ADMIN')">Manage</button>
+                </div>
+
+                <!-- User Role Card -->
+                <div class="role-card">
+                    <h2 class="role-card-title">User</h2>
+                    <p class="role-card-desc">Manage turf at user level</p>
+                    <button class="btn-action" onclick="openAuthModal('USER')">Book</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- =========================================================
+             2. ADMIN PORTAL
+             ========================================================= -->
+        <div id="adminPortalView" class="portal-wrapper" style="display: none;">
+            <!-- Left Sidebar Navigation -->
+            <aside class="portal-sidebar">
+                <button id="adminBtnInfo" class="sidebar-btn" onclick="showAdminTab('INFO')">INFORMATION</button>
+                <button id="adminBtnSchedule" class="sidebar-btn" onclick="showAdminTab('SCHEDULE')">SCHEDULE</button>
+                <button id="adminBtnHistory" class="sidebar-btn" onclick="showAdminTab('HISTORY')">HISTORY</button>
+            </aside>
+
+            <!-- Main Content Card -->
+            <main class="portal-content">
+                <!-- Admin Welcome Screen -->
+                <div id="adminWelcomeTab" class="welcome-box">
+                    <h2 class="welcome-title">Welcome to Admin Portal</h2>
+                </div>
+
+                <!-- Admin Information Tab -->
+                <div id="adminInfoTab" style="display: none;">
+                    <div class="sub-tabs">
+                        <span id="subTabBasicDetails" class="sub-tab-link active" onclick="switchAdminInfoSubTab('BASIC')">Basic Details</span>
+                        <span id="subTabSlotTimings" class="sub-tab-link" onclick="switchAdminInfoSubTab('SLOTS')">Slot Timings</span>
+                    </div>
+
+                    <!-- Basic Details Form -->
+                    <div id="adminBasicDetailsSec">
+                        <form id="adminTurfDetailsForm" class="form-grid">
+                            <div class="form-row-simple">
+                                <label class="form-label-simple">Turf Name:</label>
+                                <input type="text" id="adminTurfName" class="form-input-simple" value="Turf1" required>
+                            </div>
+                            <div class="form-row-simple">
+                                <label class="form-label-simple">Location:</label>
+                                <input type="text" id="adminTurfLocation" class="form-input-simple" value="Downtown Sports Arena" required>
+                            </div>
+                            <div class="form-row-simple">
+                                <label class="form-label-simple">Turf Price (Without Lights):</label>
+                                <input type="number" id="adminPriceWithoutLights" class="form-input-simple" value="1500" required>
+                            </div>
+                            <div class="form-row-simple">
+                                <label class="form-label-simple">Turf Price (With Lights):</label>
+                                <input type="number" id="adminPriceWithLights" class="form-input-simple" value="2000" required>
+                            </div>
+                            <div class="form-row-simple">
+                                <label class="form-label-simple">Turf Timing (Weekday / Weekend):</label>
+                                <div style="display: flex; gap: 10px; flex: 1;">
+                                    <input type="time" id="adminOpenTime" class="form-input-simple" value="06:00" style="flex:1;">
+                                    <span style="align-self: center;">to</span>
+                                    <input type="time" id="adminCloseTime" class="form-input-simple" value="23:00" style="flex:1;">
+                                </div>
+                            </div>
+                            <div style="text-align: right; margin-top: 14px;">
+                                <button type="submit" class="btn-primary-save">Save</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Slot Timings View -->
+                    <div id="adminSlotTimingsSec" style="display: none;">
+                        <h3 style="font-size: 1.1rem; margin-bottom: 12px; color: #1e293b;">Active Slot Timings</h3>
+                        <div id="adminSlotBadgeGrid" class="slots-badge-grid">
+                            <!-- Populated with green 06:00 - 22:00 badges -->
+                        </div>
+                        <div style="margin-top: 20px; display: flex; gap: 12px; justify-content: flex-end;">
+                            <button class="btn-action" onclick="showAdminTab('SCHEDULE')">Price</button>
+                            <button class="btn-action" onclick="switchAdminInfoSubTab('BASIC')">Edit</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin Schedule Tab -->
+                <div id="adminScheduleTab" style="display: none;">
+                    <h3 style="font-size: 1.1rem; margin-bottom: 12px; color: #1e293b;">Schedule Turf Slots</h3>
+                    <div id="adminScheduleSlotsGrid" class="slots-badge-grid">
+                        <!-- Populated with slots -->
+                    </div>
+                    <form id="adminScheduleForm" class="form-grid" style="margin-top: 20px;">
+                        <div class="form-row-simple">
+                            <label class="form-label-simple">Turf Price (Without Lights):</label>
+                            <input type="number" id="schedPriceWithoutLights" class="form-input-simple" value="1500">
+                        </div>
+                        <div class="form-row-simple">
+                            <label class="form-label-simple">Turf Price (With Lights):</label>
+                            <input type="number" id="schedPriceWithLights" class="form-input-simple" value="2000">
+                        </div>
+                        <div class="form-row-simple">
+                            <label class="form-label-simple">Start Date:</label>
+                            <input type="date" id="schedStartDate" class="form-input-simple" required>
+                        </div>
+                        <div class="form-row-simple">
+                            <label class="form-label-simple">End Date:</label>
+                            <input type="date" id="schedEndDate" class="form-input-simple" required>
+                        </div>
+                        <div style="text-align: right; margin-top: 14px;">
+                            <button type="submit" class="btn-primary-save">Save</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Admin History Tab -->
+                <div id="adminHistoryTab" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <h3 style="font-size: 1.1rem; color: #1e293b;">Booking History</h3>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <input type="date" id="adminHistoryDatePicker" class="form-input-simple" style="padding: 4px 10px;">
+                            <button class="btn-action" style="padding: 4px 14px;" onclick="loadAdminHistory()">🔍 Filter</button>
+                        </div>
+                    </div>
+                    <div class="data-table-container">
+                        <table class="simple-table">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Price</th>
+                                    <th>Status</th>
+                                    <th>Name</th>
+                                    <th>Mobile</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminHistoryTableBody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- =========================================================
+             3. USER PORTAL
+             ========================================================= -->
+        <div id="userPortalView" class="portal-wrapper" style="display: none;">
+            <!-- Left Sidebar Navigation -->
+            <aside class="portal-sidebar">
+                <button id="userBtnProfile" class="sidebar-btn" onclick="showUserTab('PROFILE')">PROFILE</button>
+                <button id="userBtnBookSlot" class="sidebar-btn" onclick="showUserTab('BOOK_SLOT')">BOOK SLOT</button>
+                <button id="userBtnHistory" class="sidebar-btn" onclick="showUserTab('HISTORY')">USER HISTORY</button>
+            </aside>
+
+            <!-- Main Content Card -->
+            <main class="portal-content">
+                <!-- User Welcome Screen -->
+                <div id="userWelcomeTab" class="welcome-box">
+                    <h2 class="welcome-title">Welcome to User Portal</h2>
+                </div>
+
+                <!-- User Profile Tab -->
+                <div id="userProfileTab" style="display: none;">
+                    <h3 style="font-size: 1.2rem; margin-bottom: 20px; color: #1e293b;">User Profile</h3>
+                    <form id="userProfileForm" class="form-grid">
+                        <div class="form-row-simple">
+                            <label class="form-label-simple">User Name:</label>
+                            <input type="text" id="userProfileName" class="form-input-simple" value="User 1" required>
+                        </div>
+                        <div class="form-row-simple">
+                            <label class="form-label-simple">Phone no:</label>
+                            <input type="text" id="userProfilePhone" class="form-input-simple" value="9888888888" required>
+                        </div>
+                        <div class="form-row-simple">
+                            <label class="form-label-simple">Email Id:</label>
+                            <input type="email" id="userProfileEmail" class="form-input-simple" value="user1@test.com" required>
+                        </div>
+                        <div style="text-align: right; margin-top: 14px;">
+                            <button type="submit" class="btn-primary-save">Save</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- User Book Slot Tab -->
+                <div id="userBookSlotTab" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
+                        <h3 style="font-size: 1.15rem; color: #1e293b;">Available Turfs & Slots</h3>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <label style="font-size: 0.9rem; font-weight: 600;">Date:</label>
+                            <input type="date" id="userBookingDatePicker" class="form-input-simple" style="padding: 4px 10px;" onchange="loadUserTurfsAndSlots()">
+                            <button class="btn-action" style="padding: 4px 14px;" onclick="loadUserTurfsAndSlots()">🔍</button>
+                        </div>
+                    </div>
+
+                    <div id="userTurfSlotsList">
+                        <!-- Populated with rows of turfs and green slot buttons -->
+                    </div>
+                </div>
+
+                <!-- User History Tab -->
+                <div id="userHistoryTab" style="display: none;">
+                    <h2 style="text-align: center; font-size: 1.3rem; margin-bottom: 16px; color: #1e293b;">User History</h2>
+                    <div class="data-table-container">
+                        <table class="simple-table">
+                            <thead>
+                                <tr>
+                                    <th>Turf Name</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Price</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userHistoryTableBody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+    </div>
+
+    <!-- =========================================================
+         MODALS
+         ========================================================= -->
+
+    <!-- AUTH MODAL (Admin / User) -->
+    <div id="authModal" class="simple-modal-overlay">
+        <div class="simple-modal-box">
+            <h3 id="authModalTitle" class="simple-modal-title">Admin</h3>
+            <div class="modal-tabs">
+                <button id="authTabRegister" class="modal-tab-btn" onclick="setAuthMode('REGISTER')">Register</button>
+                <button id="authTabLogin" class="modal-tab-btn active" onclick="setAuthMode('LOGIN')">Login</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="simpleLoginForm" onsubmit="handleSimpleLogin(event)">
+                <div class="form-grid">
+                    <div class="form-row-simple">
+                        <label style="width: 100px; font-weight: 600; font-size: 0.9rem;">User ID:</label>
+                        <input type="text" id="simpleLoginUser" class="form-input-simple" placeholder="admin@turf.com" required>
+                    </div>
+                    <div class="form-row-simple">
+                        <label style="width: 100px; font-weight: 600; font-size: 0.9rem;">Password:</label>
+                        <input type="password" id="simpleLoginPass" class="form-input-simple" placeholder="••••••••" required>
+                    </div>
+                    <div style="text-align: center; margin-top: 14px; display: flex; gap: 10px; justify-content: center;">
+                        <button type="submit" class="btn-action" style="background: #3b82f6; color: #fff; border-color: #2563eb;">Login</button>
+                        <button type="button" class="btn-action" onclick="closeAuthModal()">Cancel</button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Register Form -->
+            <form id="simpleRegisterForm" style="display: none;" onsubmit="handleSimpleRegister(event)">
+                <div class="form-grid">
+                    <div class="form-row-simple">
+                        <label style="width: 100px; font-weight: 600; font-size: 0.9rem;">Name:</label>
+                        <input type="text" id="simpleRegName" class="form-input-simple" placeholder="Name" required>
+                    </div>
+                    <div class="form-row-simple">
+                        <label style="width: 100px; font-weight: 600; font-size: 0.9rem;">Email/ID:</label>
+                        <input type="email" id="simpleRegEmail" class="form-input-simple" placeholder="email@test.com" required>
+                    </div>
+                    <div class="form-row-simple">
+                        <label style="width: 100px; font-weight: 600; font-size: 0.9rem;">Password:</label>
+                        <input type="password" id="simpleRegPass" class="form-input-simple" placeholder="••••••••" required minlength="6">
+                    </div>
+                    <div class="form-row-simple">
+                        <label style="width: 100px; font-weight: 600; font-size: 0.9rem;">Phone:</label>
+                        <input type="text" id="simpleRegPhone" class="form-input-simple" placeholder="Phone Number">
+                    </div>
+                    <div style="text-align: center; margin-top: 14px; display: flex; gap: 10px; justify-content: center;">
+                        <button type="submit" class="btn-action" style="background: #16a34a; color: #fff; border-color: #15803d;">Register</button>
+                        <button type="button" class="btn-action" onclick="closeAuthModal()">Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- CONFIRM SLOT BOOKING MODAL -->
+    <div id="confirmBookingModal" class="simple-modal-overlay">
+        <div class="simple-modal-box" style="max-width: 480px;">
+            <h3 class="simple-modal-title">Confirm Slot Booking</h3>
+            <div class="data-table-container" style="margin-bottom: 20px;">
+                <table class="simple-table">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Price</th>
+                        </tr>
+                    </thead>
+                    <tbody id="confirmSlotTableBody">
+                        <!-- Populated with selected slots -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="text-align: right; margin-bottom: 16px; font-size: 1.05rem; font-weight: 700;">
+                Total Amount: <span id="confirmTotalAmount" style="color: #16a34a;">0</span>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                <button type="button" class="btn-action" style="background: #3b82f6; color: #fff; border-color: #2563eb;" onclick="submitSlotBooking()">Submit</button>
+                <button type="button" class="btn-action" onclick="closeConfirmModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toastBar" class="toast-bar"></div>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>
